@@ -42,8 +42,8 @@ async function generateAudio() {
       {
         text: entry.original,
         type: 'original',
-        // Angry/Agitated params: Faster, slightly higher pitch, louder
-        params: '--rate=+25% --pitch=+5Hz --volume=+20%'
+        // Angry/Agitated params: Slightly faster, higher pitch, louder (adjusted for clarity)
+        params: '--rate=+10% --pitch=+5Hz --volume=+10%'
       },
       {
         text: entry.translation,
