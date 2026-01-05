@@ -37,3 +37,4 @@ jobs:
           projectName: hoftychuvslovnik
           directory: out
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          wranglerVersion: '3'
