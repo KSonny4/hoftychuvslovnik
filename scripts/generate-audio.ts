@@ -1,25 +1,56 @@
 import fs from 'fs';
 import path from 'path';
-import * as googleTTS from 'google-tts-api';
+import { exec } from 'child_process';
+import { promisify } from 'util';
 import md5 from 'md5';
 import { dictionary } from '../src/data/dictionary';
 
+const execAsync = promisify(exec);
 const AUDIO_DIR = path.join(process.cwd(), 'public', 'audio');
+const VENV_BIN = path.join(process.cwd(), 'venv', 'bin', 'edge-tts');
 
 // Ensure audio directory exists
 if (!fs.existsSync(AUDIO_DIR)) {
   fs.mkdirSync(AUDIO_DIR, { recursive: true });
 }
 
+// Function to check if edge-tts is available
+async function checkEdgeTTS() {
+  try {
+    // Check local venv first
+    if (fs.existsSync(VENV_BIN)) {
+      return VENV_BIN;
+    }
+    // Check global path
+    await execAsync('edge-tts --version');
+    return 'edge-tts';
+  } catch (e) {
+    console.error('❌ edge-tts not found. Please install it using `pip install edge-tts`.');
+    process.exit(1);
+  }
+}
+
 async function generateAudio() {
-  console.log('🎤 Generating audio files...');
+  const edgeTTSPath = await checkEdgeTTS();
+  console.log(`🎤 Generating audio files using ${edgeTTSPath}...`);
+  
   let newCount = 0;
   let skippedCount = 0;
 
   for (const entry of dictionary) {
     const items = [
-      { text: entry.original, type: 'original' },
-      { text: entry.translation, type: 'translation' }
+      {
+        text: entry.original,
+        type: 'original',
+        // Angry/Agitated params: Faster, slightly higher pitch, louder
+        params: '--rate=+25% --pitch=+5Hz --volume=+20%'
+      },
+      {
+        text: entry.translation,
+        type: 'translation',
+        // Relaxed params: Slower, slightly deeper
+        params: '--rate=-10% --pitch=-2Hz'
+      }
     ];
 
     for (const item of items) {
@@ -32,27 +63,21 @@ async function generateAudio() {
         continue;
       }
 
-      console.log(`Generating audio for: "${item.text}"...`);
+      console.log(`Generating audio for [${item.type}]: "${item.text}"...`);
       
       try {
-        const url = googleTTS.getAudioUrl(item.text, {
-          lang: 'cs',
-          slow: false,
-          host: 'https://translate.google.com',
-        });
-
-        // Fetch the audio content
-        const response = await fetch(url);
-        const arrayBuffer = await response.arrayBuffer();
-        const buffer = Buffer.from(arrayBuffer);
-
-        fs.writeFileSync(filepath, buffer);
+        // Escape quotes in text for shell command
+        const safeText = item.text.replace(/"/g, '\"');
+        const command = `${edgeTTSPath} --voice cs-CZ-AntoninNeural ${item.params} --text "${safeText}" --write-media "${filepath}"`;
+        
+        await execAsync(command);
         newCount++;
+        
         // Be nice to the API
-        await new Promise(resolve => setTimeout(resolve, 200));
+        await new Promise(resolve => setTimeout(resolve, 50));
       } catch (error) {
         console.error(`❌ Failed to generate audio for "${item.text}":`, error);
-        process.exit(1);
+        // Don't exit process, try next word
       }
     }
   }
