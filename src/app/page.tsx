@@ -12,26 +12,33 @@ import { ModeToggle } from "@/components/mode-toggle"
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center p-4 md:p-24 space-y-8">
-      <div className="w-full max-w-4xl flex justify-between items-center">
-        <h1 className="text-3xl font-bold tracking-tight">Hoftychův slovník hlášek</h1>
+    <main className="flex min-h-screen flex-col items-center p-6 md:p-24 space-y-12">
+      <div className="absolute top-6 right-6">
         <ModeToggle />
       </div>
 
-      <div className="w-full max-w-4xl border rounded-lg overflow-hidden">
+      <div className="text-center space-y-4 pt-10">
+        <h1 className="text-5xl md:text-7xl font-serif font-bold tracking-tight bg-gradient-to-b from-foreground to-foreground/70 bg-clip-text text-transparent">
+          Hoftychův slovník hlášek
+        </h1>
+        <p className="text-muted-foreground text-lg italic font-serif">
+          Legenda mluví, my překládáme
+        </p>
+      </div>
+
+      <div className="w-full max-w-4xl border rounded-xl overflow-hidden shadow-2xl bg-card">
         <Table>
-          <TableCaption>Legenda mluví, my překládáme.</TableCaption>
-          <TableHeader>
+          <TableHeader className="bg-muted/50">
             <TableRow>
-              <TableHead className="w-1/2 font-bold text-lg">Hoftyština</TableHead>
-              <TableHead className="w-1/2 font-bold text-lg">Čeština</TableHead>
+              <TableHead className="w-1/2 font-serif font-bold text-xl py-6 px-8 text-foreground">Hoftyština</TableHead>
+              <TableHead className="w-1/2 font-serif font-bold text-xl py-6 px-8 text-foreground">Čeština</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {dictionary.map((entry, index) => (
-              <TableRow key={index}>
-                <TableCell className="font-medium text-base">{entry.original}</TableCell>
-                <TableCell className="text-base">{entry.translation}</TableCell>
+              <TableRow key={index} className="hover:bg-muted/30 transition-colors">
+                <TableCell className="font-medium text-lg py-4 px-8 border-r">{entry.original}</TableCell>
+                <TableCell className="text-lg py-4 px-8 italic">{entry.translation}</TableCell>
               </TableRow>
             ))}
           </TableBody>
