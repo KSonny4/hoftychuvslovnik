@@ -9,6 +9,8 @@ import {
 } from "@/components/ui/table"
 import { dictionary } from "@/data/dictionary"
 import { ModeToggle } from "@/components/mode-toggle"
+import { AudioPlayer } from "@/components/audio-player"
+import md5 from "md5"
 
 export default function Home() {
   return (
@@ -37,8 +39,18 @@ export default function Home() {
           <TableBody>
             {dictionary.map((entry, index) => (
               <TableRow key={index} className="hover:bg-muted/30 transition-colors">
-                <TableCell className="font-medium text-lg py-4 px-8 border-r">{entry.original}</TableCell>
-                <TableCell className="text-lg py-4 px-8 italic">{entry.translation}</TableCell>
+                <TableCell className="font-medium text-lg py-4 px-8 border-r">
+                  <div className="flex items-center justify-between">
+                    <span>{entry.original}</span>
+                    <AudioPlayer hash={md5(entry.original)} />
+                  </div>
+                </TableCell>
+                <TableCell className="text-lg py-4 px-8 italic">
+                  <div className="flex items-center justify-between">
+                    <span>{entry.translation}</span>
+                    <AudioPlayer hash={md5(entry.translation)} />
+                  </div>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
