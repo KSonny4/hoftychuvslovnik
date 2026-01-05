@@ -18,7 +18,7 @@ export default function Home() {
       </div>
 
       <div className="text-center space-y-4 pt-10">
-        <h1 className="text-5xl md:text-7xl font-serif font-bold tracking-tight bg-gradient-to-b from-foreground to-foreground/70 bg-clip-text text-transparent">
+        <h1 className="text-5xl md:text-7xl font-serif font-bold tracking-tight bg-gradient-to-b from-foreground to-foreground/70 bg-clip-text text-transparent pb-4 leading-tight">
           Hoftychův slovník hlášek
         </h1>
         <p className="text-muted-foreground text-lg italic font-serif">
