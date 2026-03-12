@@ -29,4 +29,5 @@ export const dictionary: DictionaryEntry[] = [
   { original: "Topový dopíčí", translation: "Dělá mi to velkou radost" },
   { original: "Strop hochu", translation: "Toto nemá obdoby" },
   { original: "Přepíčeně", translation: "neobvykle mnoho" },
+  { original: "Cíga prostě chutnaj líp na horách, hochu", translation: "Na horách je kouření příjemnější" },
 ];
