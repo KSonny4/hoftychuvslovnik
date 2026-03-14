@@ -14,26 +14,6 @@ import { slugify } from "@/lib/utils"
 import md5 from "md5"
 import type { DictionaryEntry } from "@/data/dictionary"
 
-// Module-level queue for deep link audio
-const pendingAudioHashes = new Set<string>()
-
-export function queueAudioForHash(entries: DictionaryEntry[], hash: string) {
-  if (!hash) return
-  const entry = entries.find(e => slugify(e.original) === hash)
-  if (entry) {
-    const audioHash = md5(entry.original)
-    pendingAudioHashes.add(audioHash)
-  }
-}
-
-export function consumePendingAudio(hash: string): boolean {
-  if (pendingAudioHashes.has(hash)) {
-    pendingAudioHashes.delete(hash)
-    return true
-  }
-  return false
-}
-
 interface DictionaryTableProps {
   entries: DictionaryEntry[]
 }
@@ -56,7 +36,12 @@ export function DictionaryTable({ entries }: DictionaryTableProps) {
     
     const hash = getHash()
     if (hash) {
-      queueAudioForHash(entries, hash)
+      // Find the entry for this hash and play its audio
+      const entry = entries.find((e: DictionaryEntry) => slugify(e.original) === hash)
+      if (entry) {
+        const audioHash = md5(entry.original)
+        playAudio(audioHash)
+      }
       
       // Scroll to element
       setTimeout(() => {
@@ -83,7 +68,7 @@ export function DictionaryTable({ entries }: DictionaryTableProps) {
         }, 100)
         
         // Queue audio for playback
-        const entry = entries.find(e => slugify(e.original) === newHash)
+        const entry = entries.find((e: DictionaryEntry) => slugify(e.original) === newHash)
         if (entry) {
           const audioHash = md5(entry.original)
           playAudio(audioHash)
@@ -121,7 +106,7 @@ export function DictionaryTable({ entries }: DictionaryTableProps) {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {entries.map((entry, index) => {
+        {entries.map((entry: DictionaryEntry, index: number) => {
           const slug = slugify(entry.original)
           const isHighlighted = highlightedId === slug
 
