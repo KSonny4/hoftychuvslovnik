@@ -30,4 +30,6 @@ export const dictionary: DictionaryEntry[] = [
   { original: "Strop hochu", translation: "Toto nemá obdoby" },
   { original: "Přepíčeně", translation: "neobvykle mnoho" },
   { original: "Cíga prostě chutnaj líp na horách, hochu", translation: "Na horách je kouření příjemnější" },
+  { original: "Dneska bude lyžovačka jak mrd", translation: "Dneska to na lyžích bude stát za to" },
+  { original: "Puchejř jak kokot", translation: "Mám velký puchýř" },
 ];
