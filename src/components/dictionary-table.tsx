@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState, useMemo } from "react"
+import { useEffect, useState, useMemo, useCallback, useRef } from "react"
 import {
   Table,
   TableBody,
@@ -9,60 +9,101 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { AudioPlayer } from "@/components/audio-player"
+import { AudioPlayer, playAudio } from "@/components/audio-player"
 import { slugify } from "@/lib/utils"
 import md5 from "md5"
 import type { DictionaryEntry } from "@/data/dictionary"
 
-function getInitialHash() {
-  if (typeof window === "undefined") return ""
-  return window.location.hash.slice(1)
+// Module-level queue for deep link audio
+const pendingAudioHashes = new Set<string>()
+
+export function queueAudioForHash(entries: DictionaryEntry[], hash: string) {
+  if (!hash) return
+  const entry = entries.find(e => slugify(e.original) === hash)
+  if (entry) {
+    const audioHash = md5(entry.original)
+    pendingAudioHashes.add(audioHash)
+  }
+}
+
+export function consumePendingAudio(hash: string): boolean {
+  if (pendingAudioHashes.has(hash)) {
+    pendingAudioHashes.delete(hash)
+    return true
+  }
+  return false
 }
 
 interface DictionaryTableProps {
   entries: DictionaryEntry[]
 }
 
+function getHash() {
+  if (typeof window === "undefined") return ""
+  return window.location.hash.slice(1)
+}
+
 export function DictionaryTable({ entries }: DictionaryTableProps) {
-  const [initialHash] = useState(getInitialHash)
-  const [currentHash, setCurrentHash] = useState(initialHash)
+  // Initialize state from URL hash - this runs only once
+  const [currentHash, setCurrentHash] = useState<string>(() => getHash())
   const [copiedId, setCopiedId] = useState<string | null>(null)
+  const initializedRef = useRef(false)
 
-  const highlightedId = useMemo(() => currentHash, [currentHash])
-
+  // Queue audio on initial mount (runs once)
   useEffect(() => {
-    if (currentHash) {
-      const element = document.getElementById(currentHash)
-      if (element) {
-        element.scrollIntoView({ behavior: "smooth", block: "center" })
-      }
+    if (initializedRef.current) return
+    initializedRef.current = true
+    
+    const hash = getHash()
+    if (hash) {
+      queueAudioForHash(entries, hash)
       
-      const entry = entries.find(e => slugify(e.original) === currentHash)
-      if (entry) {
-        const audioHash = md5(entry.original)
-        setTimeout(() => {
-          window.dispatchEvent(new CustomEvent("play-audio", { detail: audioHash }))
-        }, 300)
-      }
+      // Scroll to element
+      setTimeout(() => {
+        const element = document.getElementById(hash)
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth", block: "center" })
+        }
+      }, 200)
     }
-  }, [currentHash, entries])
+  }, [entries])
 
+  // Handle hash changes
   useEffect(() => {
     const handleHashChange = () => {
-      setCurrentHash(window.location.hash.slice(1))
+      const newHash = getHash()
+      setCurrentHash(newHash)
+      if (newHash) {
+        // Scroll to element
+        setTimeout(() => {
+          const element = document.getElementById(newHash)
+          if (element) {
+            element.scrollIntoView({ behavior: "smooth", block: "center" })
+          }
+        }, 100)
+        
+        // Queue audio for playback
+        const entry = entries.find(e => slugify(e.original) === newHash)
+        if (entry) {
+          const audioHash = md5(entry.original)
+          playAudio(audioHash)
+        }
+      }
     }
 
     window.addEventListener("hashchange", handleHashChange)
     return () => window.removeEventListener("hashchange", handleHashChange)
-  }, [])
+  }, [entries])
 
-  const handleCopyLink = (entry: DictionaryEntry) => {
+  const handleCopyLink = useCallback((entry: DictionaryEntry) => {
     const slug = slugify(entry.original)
     const url = `${window.location.origin}${window.location.pathname}#${slug}`
     navigator.clipboard.writeText(url)
     setCopiedId(slug)
     setTimeout(() => setCopiedId(null), 2000)
-  }
+  }, [])
+
+  const highlightedId = useMemo(() => currentHash, [currentHash])
 
   return (
     <Table>
