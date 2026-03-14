@@ -35,6 +35,6 @@ export const dictionary: DictionaryEntry[] = [
     translation: "Na horách je kouření příjemnější",
     slyseno: "13. 3. 22:15"
   },
-  { original: "Dneska bude lyžovačka jak mrd", translation: "Dneska to na lyžích bude stát za to", slyseno: "14. 3. 7:20" },
+  { original: "Dneska bude lyžovačka jak zmrd", translation: "Dneska to na lyžích bude stát za to", slyseno: "14. 3. 7:20" },
   { original: "Puchejř jak kokot", translation: "Mám velký puchýř" },
 ];
