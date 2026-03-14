@@ -20,12 +20,12 @@ interface DictionaryTableProps {
 
 function getHash() {
   if (typeof window === "undefined") return ""
-  return window.location.hash.slice(1)
+  return window.location.hash.slice(1).replace(/(^-|-$)/g, "")
 }
 
 export function DictionaryTable({ entries }: DictionaryTableProps) {
-  // Initialize state from URL hash - this runs only once
-  const [currentHash, setCurrentHash] = useState<string>(() => getHash())
+  // Initialize state empty to avoid hydration mismatch, then populate from hash
+  const [currentHash, setCurrentHash] = useState<string>("")
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const initializedRef = useRef(false)
 
@@ -36,6 +36,7 @@ export function DictionaryTable({ entries }: DictionaryTableProps) {
     
     const hash = getHash()
     if (hash) {
+      setCurrentHash(hash)
       // Find the entry for this hash and play its audio
       const entry = entries.find((e: DictionaryEntry) => slugify(e.original) === hash)
       if (entry) {
