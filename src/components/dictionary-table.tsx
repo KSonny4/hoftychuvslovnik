@@ -40,7 +40,9 @@ export function DictionaryTable({ entries }: DictionaryTableProps) {
       const entry = entries.find(e => slugify(e.original) === currentHash)
       if (entry) {
         const audioHash = md5(entry.original)
-        window.dispatchEvent(new CustomEvent("play-audio", { detail: audioHash }))
+        setTimeout(() => {
+          window.dispatchEvent(new CustomEvent("play-audio", { detail: audioHash }))
+        }, 300)
       }
     }
   }, [currentHash, entries])
