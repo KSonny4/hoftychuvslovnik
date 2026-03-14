@@ -1,16 +1,6 @@
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
 import { dictionary } from "@/data/dictionary"
 import { ModeToggle } from "@/components/mode-toggle"
-import { AudioPlayer } from "@/components/audio-player"
-import md5 from "md5"
+import { DictionaryTable } from "@/components/dictionary-table"
 
 export default function Home() {
   return (
@@ -29,40 +19,7 @@ export default function Home() {
       </div>
 
       <div className="w-full max-w-4xl border rounded-xl overflow-hidden shadow-2xl bg-card">
-        <Table>
-          <TableHeader className="bg-muted/50">
-            <TableRow>
-              <TableHead className="w-1/3 font-serif font-bold text-xl py-6 px-8 text-foreground">Hoftyština</TableHead>
-              <TableHead className="w-1/3 font-serif font-bold text-xl py-6 px-8 text-foreground">Čeština</TableHead>
-              <TableHead className="w-1/6 font-serif font-bold text-xl py-6 px-8 text-foreground">Slyšeno</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {dictionary.map((entry, index) => (
-              <TableRow key={index} className="hover:bg-muted/30 transition-colors">
-                <TableCell className="font-medium text-lg py-4 px-8 border-r">
-                  <div className="flex items-center justify-between">
-                    <span>{entry.original}</span>
-                    <AudioPlayer hash={md5(entry.original)} />
-                  </div>
-                </TableCell>
-                <TableCell className="text-lg py-4 px-8 italic border-r">
-                  <div className="flex items-center justify-between">
-                    <span>{entry.translation}</span>
-                    <AudioPlayer hash={md5(entry.translation)} />
-                  </div>
-                </TableCell>
-                <TableCell className="text-lg py-4 px-8 text-muted-foreground">
-                  {entry.slyseno && (
-                    <span className="text-sm bg-muted px-2 py-1 rounded">
-                      {entry.slyseno}
-                    </span>
-                  )}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+        <DictionaryTable entries={dictionary} />
       </div>
     </main>
   )
