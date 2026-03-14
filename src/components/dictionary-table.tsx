@@ -36,8 +36,14 @@ export function DictionaryTable({ entries }: DictionaryTableProps) {
       if (element) {
         element.scrollIntoView({ behavior: "smooth", block: "center" })
       }
+      
+      const entry = entries.find(e => slugify(e.original) === currentHash)
+      if (entry) {
+        const audioHash = md5(entry.original)
+        window.dispatchEvent(new CustomEvent("play-audio", { detail: audioHash }))
+      }
     }
-  }, [currentHash])
+  }, [currentHash, entries])
 
   useEffect(() => {
     const handleHashChange = () => {

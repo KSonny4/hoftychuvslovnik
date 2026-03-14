@@ -4,17 +4,6 @@ import { useState, useRef, useEffect } from "react"
 import { Volume2, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
-interface AudioPlayerProps {
-  text: string;
-}
-
-// We need to use md5 to match the filename generation
-// Since we can't easily import 'md5' in the client component without polyfills,
-// we will pass the hash from the server component or pre-calculate it.
-// However, page.tsx is a server component by default in App Router, so we can generate hashes there.
-// But wait, the previous `page.tsx` was "use client"? No, it wasn't marked, but it imported `ModeToggle` which is client.
-// Let's check page.tsx content again.
-
 export function AudioPlayer({ hash }: { hash: string }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -23,13 +12,28 @@ export function AudioPlayer({ hash }: { hash: string }) {
     audioRef.current = new Audio(`/audio/${hash}.mp3`);
     audioRef.current.onended = () => setIsPlaying(false);
     
-    // Cleanup
     return () => {
       if (audioRef.current) {
         audioRef.current.pause();
         audioRef.current = null;
       }
     };
+  }, [hash]);
+
+  useEffect(() => {
+    const handlePlayAudio = (e: CustomEvent) => {
+      if (e.detail === hash && audioRef.current) {
+        audioRef.current.currentTime = 0;
+        setIsPlaying(true);
+        audioRef.current.play().catch(e => {
+          console.error("Audio playback failed", e);
+          setIsPlaying(false);
+        });
+      }
+    };
+
+    window.addEventListener("play-audio", handlePlayAudio as EventListener);
+    return () => window.removeEventListener("play-audio", handlePlayAudio as EventListener);
   }, [hash]);
 
   const play = () => {
