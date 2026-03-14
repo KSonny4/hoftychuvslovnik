@@ -32,8 +32,9 @@ export default function Home() {
         <Table>
           <TableHeader className="bg-muted/50">
             <TableRow>
-              <TableHead className="w-1/2 font-serif font-bold text-xl py-6 px-8 text-foreground">Hoftyština</TableHead>
-              <TableHead className="w-1/2 font-serif font-bold text-xl py-6 px-8 text-foreground">Čeština</TableHead>
+              <TableHead className="w-1/3 font-serif font-bold text-xl py-6 px-8 text-foreground">Hoftyština</TableHead>
+              <TableHead className="w-1/3 font-serif font-bold text-xl py-6 px-8 text-foreground">Čeština</TableHead>
+              <TableHead className="w-1/6 font-serif font-bold text-xl py-6 px-8 text-foreground">Slyšeno</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -45,11 +46,18 @@ export default function Home() {
                     <AudioPlayer hash={md5(entry.original)} />
                   </div>
                 </TableCell>
-                <TableCell className="text-lg py-4 px-8 italic">
+                <TableCell className="text-lg py-4 px-8 italic border-r">
                   <div className="flex items-center justify-between">
                     <span>{entry.translation}</span>
                     <AudioPlayer hash={md5(entry.translation)} />
                   </div>
+                </TableCell>
+                <TableCell className="text-lg py-4 px-8 text-muted-foreground">
+                  {entry.slyseno && (
+                    <span className="text-sm bg-muted px-2 py-1 rounded">
+                      {entry.slyseno}
+                    </span>
+                  )}
                 </TableCell>
               </TableRow>
             ))}

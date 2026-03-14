@@ -1,6 +1,7 @@
 export type DictionaryEntry = {
   original: string;
   translation: string;
+  slyseno?: string;
 };
 
 export const dictionary: DictionaryEntry[] = [
@@ -29,5 +30,11 @@ export const dictionary: DictionaryEntry[] = [
   { original: "Topový dopíčí", translation: "Dělá mi to velkou radost" },
   { original: "Strop hochu", translation: "Toto nemá obdoby" },
   { original: "Přepíčeně", translation: "neobvykle mnoho" },
-  { original: "Cíga prostě chutnaj líp na horách, hochu", translation: "Na horách je kouření příjemnější" },
+  { 
+    original: "Cíga prostě chutnaj líp na horách, hochu", 
+    translation: "Na horách je kouření příjemnější",
+    slyseno: "3. 3. 2026 22:15"
+  },
+  { original: "Dneska bude lyžovačka jak mrd", translation: "Dneska to na lyžích bude stát za to" },
+  { original: "Puchejř jak kokot", translation: "Mám velký puchýř" },
 ];
